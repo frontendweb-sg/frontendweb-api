@@ -1,0 +1,42 @@
+{
+	"name": "frontendweb-api",
+	"version": "1.0.0",
+	"description": "frontendweb api",
+	"main": "index.js",
+	"scripts": {
+		"start": "ts-node src/index.ts",
+		"server": "ts-node-dev src/index.ts",
+		"prepare": "husky install"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/frontendweb-sg/frontendweb-api.git"
+	},
+	"lint-staged": {
+		"**/*": "prettier --write --ignore-unknown"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/frontendweb-sg/frontendweb-api/issues"
+	},
+	"homepage": "https://github.com/frontendweb-sg/frontendweb-api#readme",
+	"dependencies": {
+		"@types/express": "^4.17.13",
+		"bcryptjs": "^2.4.3",
+		"dotenv": "^16.0.1",
+		"ejs": "^3.1.8",
+		"express": "^4.18.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^6.4.1",
+		"ts-node": "^10.8.1",
+		"typescript": "^4.7.4"
+	},
+	"devDependencies": {
+		"husky": "^8.0.1",
+		"lint-staged": "^13.0.3",
+		"prettier": "2.7.1",
+		"ts-node-dev": "^2.0.0"
+	}
+}
