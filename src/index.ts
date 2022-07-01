@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 import morgan from "morgan";
 import {connectDb} from "./db";
-
+import cors from "cors";
 // app
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,6 +17,11 @@ app.use(express.static(path.join(__dirname, "..", "uploads")));
 
 // middleware
 app.use(morgan("dev"));
+app.use(
+	cors({
+		origin: "localhost:3000",
+	})
+);
 
 // routes
 app.get("/api", (req, res, next) => {
