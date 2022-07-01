@@ -16,12 +16,16 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, "..", "uploads")));
 
 // middleware
-app.use(morgan("dev"));
 app.use(
 	cors({
 		origin: "localhost:3000",
 	})
 );
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === "development") {
+	app.use(morgan("dev"));
+} else {
+}
 
 // routes
 app.get("/api", (req, res, next) => {
