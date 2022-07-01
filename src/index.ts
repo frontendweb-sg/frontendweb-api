@@ -1,9 +1,11 @@
-import path from "path";
-import express from "express";
 import dotenv from "dotenv";
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
+import path from "path";
+import express from "express";
 import {connectDb} from "./db";
 import cors from "cors";
+import admin from "firebase-admin";
+import {firebaseSdkConfig, IFBConfig} from "./config/firebase";
 //import morgan from "morgan";
 // app
 const app = express();
@@ -21,7 +23,12 @@ app.use(
 		origin: "localhost:3000",
 	})
 );
-console.log(process.env.NODE_ENV);
+
+// firebase sdk
+admin.initializeApp({
+	credential: admin.credential.cert(firebaseSdkConfig as any),
+});
+
 if (process.env.NODE_ENV === "development") {
 	//app.use(morgan("dev"));
 } else {
