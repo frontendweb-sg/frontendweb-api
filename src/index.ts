@@ -2,9 +2,9 @@ import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
-import morgan from "morgan";
 import {connectDb} from "./db";
 import cors from "cors";
+//import morgan from "morgan";
 // app
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -23,7 +23,7 @@ app.use(
 );
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "development") {
-	app.use(morgan("dev"));
+	//app.use(morgan("dev"));
 } else {
 }
 
