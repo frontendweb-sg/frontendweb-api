@@ -6,6 +6,7 @@ import {connectDb} from "./db";
 import cors from "cors";
 import admin from "firebase-admin";
 import {firebaseSdkConfig, IFBConfig} from "./config/firebase";
+import {userRoutes} from "./routes/user";
 //import morgan from "morgan";
 // app
 const app = express();
@@ -35,6 +36,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // routes
+app.use("/api/user", userRoutes);
 app.get("/api", (req, res, next) => {
 	res.send({
 		message: "Api is running...",
