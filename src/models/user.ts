@@ -1,25 +1,21 @@
 import mongoose from "mongoose";
+import {IRole} from "../utility";
 
 /**
  * User schema
  */
-enum ERoles {
-	user,
-	admin,
-	superadmin,
-}
+
 export interface userAttr {
 	first_name: string;
 	last_name: string;
 	username: string;
 	email: string;
-	password?: string;
 	mobile?: string;
 	photo_url?: string;
 	firebase_uid?: string;
 	country?: string;
 	timezone?: string;
-	role?: ERoles;
+	role?: IRole;
 	active?: boolean;
 }
 
@@ -28,13 +24,12 @@ export interface UserDoc extends mongoose.Document {
 	last_name: string;
 	username: string;
 	email: string;
-	password?: string;
 	mobile?: string;
 	photo_url?: string;
 	firebase_uid?: string;
 	country?: string;
 	timezone?: string;
-	role?: ERoles;
+	role?: IRole;
 	active?: boolean;
 }
 
@@ -48,9 +43,9 @@ const userSchema = new mongoose.Schema(
 		last_name: {type: String, require: true},
 		username: {type: String, require: true},
 		email: {type: String, unique: true},
-		password: {type: String, require: true},
-		mobile: {type: String, unique: true},
+		mobile: {type: String},
 		photo_url: {type: String},
+		role: {type: String, default: "user", enum: IRole},
 		firebase_uid: {type: String, require: true},
 		country: {type: String},
 		timezone: {type: String},

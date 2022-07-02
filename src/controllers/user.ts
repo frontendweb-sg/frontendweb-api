@@ -1,7 +1,7 @@
-import {Request, Response, NextFunction} from "express";
-import {User, userAttr, UserDoc} from "../models/user";
 import admin from "firebase-admin";
-import {Jwt} from "../utility/jwt";
+import {Request, Response, NextFunction} from "express";
+import {User, UserDoc} from "../models/user";
+import {IRole, Jwt} from "../utility";
 /**
  * User signin
  * @param req
@@ -27,32 +27,40 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
 		}
 
 		// user is in db or not
-		let resultSend: UserDoc;
-		const hasUser = await User.findOne({email: firebase.email});
-		if (!hasUser) {
-			const name = firebase.name.split(" ");
 
-			const user = User.addUser({
-				first_name: name[0],
-				last_name: name[1],
-				username: firebase.name,
-				email: firebase.email!,
-				photo_url: firebase.picture,
-				firebase_uid: firebase.user_id,
-				role: 0,
-			}) as UserDoc;
-
-			resultSend = await user.save();
-		}
-
-		const token = Jwt.tokenGenerate(resultSend!);
 		var lExpiresIn = 86400000; // 24 hours in millisecond
 		const expire = new Date(Date.now()).getTime() + lExpiresIn;
 
+		// if user
+		const hasUser = (await User.findOne({email: firebase.email})) as UserDoc;
+		if (hasUser) {
+			const token = Jwt.tokenGenerate(hasUser!);
+			return res.send({
+				token,
+				exp: expire,
+				user: hasUser,
+			});
+		}
+
+		const name = firebase.name.split(" ");
+		const user = User.addUser({
+			first_name: name[0],
+			last_name: name[1],
+			username: firebase.name,
+			email: firebase.email!,
+			photo_url: firebase.picture,
+			firebase_uid: firebase.user_id,
+			active: true,
+			role: IRole.user,
+			country: "India",
+			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+		}) as UserDoc;
+		const result = await user.save();
+		const token = Jwt.tokenGenerate(result);
 		return res.send({
-			token: token,
+			token,
 			exp: expire,
-			...(resultSend! || hasUser),
+			user: result,
 		});
 	} catch (error) {
 		next(error);
@@ -76,7 +84,14 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
+const signInEmail = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const {firebaseToken} = req.body;
+	} catch (error) {
+		next(error);
+	}
+};
 /**
  * export methods
  */
-export {signIn, signUp};
+export {signIn, signUp, signInEmail};

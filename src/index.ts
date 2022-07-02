@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "..", "uploads")));
 // middleware
 app.use(
 	cors({
-		origin: "localhost:3000",
+		origin: "http://localhost:3000",
 	})
 );
 
