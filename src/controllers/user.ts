@@ -31,6 +31,7 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
 		const hasUser = await User.findOne({email: firebase.email});
 		if (!hasUser) {
 			const name = firebase.name.split(" ");
+
 			const user = User.addUser({
 				first_name: name[0],
 				last_name: name[1],

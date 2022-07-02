@@ -4,14 +4,14 @@ import path from "path";
 import express from "express";
 import {connectDb} from "./db";
 import cors from "cors";
-import admin from "firebase-admin";
-import {firebaseSdkConfig, IFBConfig} from "./config/firebase";
 import {userRoutes} from "./routes/user";
-//import morgan from "morgan";
+import "./firebase";
+
 // app
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// app setting
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
@@ -25,13 +25,7 @@ app.use(
 	})
 );
 
-// firebase sdk
-admin.initializeApp({
-	credential: admin.credential.cert(firebaseSdkConfig as any),
-});
-
 if (process.env.NODE_ENV === "development") {
-	//app.use(morgan("dev"));
 } else {
 }
 
@@ -50,3 +44,5 @@ const server = app.listen(PORT, async () => {
 	console.log("Server is running on --- ", PORT);
 	await connectDb();
 });
+
+export {server};
