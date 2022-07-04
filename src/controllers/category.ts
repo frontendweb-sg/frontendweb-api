@@ -1,8 +1,8 @@
 import {NextFunction, Request, Response} from "express";
 import {BadRequestError, NotFoundError} from "../errors";
 import {CatDoc, Category} from "../models/category";
-import {Post} from "../models/post";
-import {responseBody, slugname, transformRespnose} from "../utility";
+import {Post} from "../models/blog";
+import {slugname} from "../utility";
 
 /**
  * Get catgories
@@ -14,9 +14,9 @@ const getCategories = async (
 ) => {
 	try {
 		const cats = (await Category.find().sort({
-			insertAt: 1,
+			title: 1,
 		})) as CatDoc[];
-		res.status(200).send({data: transformRespnose(cats, "category")});
+		res.status(200).send(cats);
 	} catch (err) {
 		throw next(err);
 	}
@@ -32,7 +32,7 @@ const addUpdateCategory = async (
 ) => {
 	try {
 		const catId = req.params.catId;
-		const {title, description, image} = req.body;
+		const {title} = req.body;
 		let slug = req.body.slug;
 		const existCat = await Category.findById(catId);
 
@@ -41,25 +41,17 @@ const addUpdateCategory = async (
 			slug = slugname(title);
 			existCat.title = title;
 			existCat.slug = slug;
-			existCat.description = description;
-			existCat.image = image;
 			await existCat.save();
-			return res
-				.status(200)
-				.send({data: transformRespnose(existCat, "category")});
+			return res.status(200).send(existCat);
 		} else {
 			if (slug === "") slug = slugname(title);
-			const cateogry = Category.build({
+			const cateogry = Category.addNew({
 				title,
 				slug,
-				description,
-				image,
 			});
 
 			await cateogry.save();
-			return res
-				.status(201)
-				.send({data: transformRespnose(cateogry, "category")});
+			return res.status(201).send(cateogry);
 		}
 	} catch (err) {
 		throw next(err);
@@ -82,9 +74,7 @@ const deleteCategory = async (
 		}
 		const result = await cateogry.remove();
 		await Post.deleteMany({category: result._id}); // delete all post relative to category
-		return res
-			.status(200)
-			.send({data: transformRespnose(cateogry, "category")});
+		return res.status(200).send(result);
 	} catch (err) {
 		throw next(err);
 	}

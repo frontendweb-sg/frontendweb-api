@@ -6,6 +6,7 @@ import {connectDb} from "./db";
 import cors from "cors";
 import {userRoutes} from "./routes/user";
 import "./firebase";
+import {errorHandler} from "./middleware";
 
 // app
 const app = express();
