@@ -1,7 +1,6 @@
-import {Request, Response, NextFunction} from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import {defautlConfig} from "../config";
-import {AuthenticationError} from "../errors";
+import { AuthenticationError } from "../errors";
 
 // jwt response
 interface UserPayload {
@@ -30,7 +29,7 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
 
 	let verify = null;
 	try {
-		verify = jwt.verify(token, defautlConfig.SECRET_KEY) as UserPayload;
+		verify = jwt.verify(token, process.env.SECRET_KEY!) as UserPayload;
 	} catch (err) {
 		throw new AuthenticationError();
 	}
@@ -42,4 +41,4 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
 	next();
 };
 
-export {currentUser};
+export { currentUser };

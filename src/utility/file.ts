@@ -1,13 +1,13 @@
 import fs from "fs";
 import path from "path";
-import {regExp} from "./regexp";
+import { regExp } from "./regexp";
 const resizeImg = require("resize-img");
 
 // file name
 const filename = (file: any) => file.filename;
 
 // slug name
-const slugname = (slug: string) => slug.replace(/\s+/g, "-");
+const slugname = (slug: string) => slug.replace(/\s+/g, "-").toLowerCase();
 
 // token expiration date
 const tokenExpireDate = (time: number = 1): Date => {

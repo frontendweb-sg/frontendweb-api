@@ -1,8 +1,8 @@
-import {NextFunction, Request, Response} from "express";
-import {BadRequestError, NotFoundError} from "../errors";
-import {CatDoc, Category} from "../models/category";
-import {Post} from "../models/blog";
-import {slugname} from "../utility";
+import { NextFunction, Request, Response } from "express";
+import { BadRequestError, NotFoundError } from "../errors";
+import { CatDoc, Category } from "../models/category";
+import { Post } from "../models/blog";
+import { slugname } from "../utility";
 
 /**
  * Get catgories
@@ -13,9 +13,7 @@ const getCategories = async (
 	next: NextFunction
 ) => {
 	try {
-		const cats = (await Category.find().sort({
-			title: 1,
-		})) as CatDoc[];
+		const cats = (await Category.find().sort({ title: 1 })) as CatDoc[];
 		res.status(200).send(cats);
 	} catch (err) {
 		throw next(err);
@@ -32,8 +30,9 @@ const addUpdateCategory = async (
 ) => {
 	try {
 		const catId = req.params.catId;
-		const {title} = req.body;
+		const { title } = req.body;
 		let slug = req.body.slug;
+
 		const existCat = await Category.findById(catId);
 
 		// if category existed
@@ -44,7 +43,7 @@ const addUpdateCategory = async (
 			await existCat.save();
 			return res.status(200).send(existCat);
 		} else {
-			if (slug === "") slug = slugname(title);
+			if (!slug) slug = slugname(title);
 			const cateogry = Category.addNew({
 				title,
 				slug,
@@ -73,8 +72,8 @@ const deleteCategory = async (
 			throw new NotFoundError("Category not found!");
 		}
 		const result = await cateogry.remove();
-		await Post.deleteMany({category: result._id}); // delete all post relative to category
-		return res.status(200).send(result);
+		await Post.deleteMany({ category: result._id }); // delete all post relative to category
+		return res.status(200).send({ _id: catId });
 	} catch (err) {
 		throw next(err);
 	}
@@ -83,54 +82,32 @@ const deleteCategory = async (
 /**
  * Get catgories
  */
-const activateCategory = async (
+const enableInactiveCategory = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
+	const catId = req.params.catId;
+	const status = req.query?.status;
 	try {
-		const catId = req.params.catId;
-		const cateogry = await Category.findById(catId);
-		if (!cateogry) {
-			throw new NotFoundError("Category not found!");
-		}
-		if (cateogry.active) {
-			throw new BadRequestError("Category already activated!");
-		}
-		cateogry.active = true;
-		await cateogry.save();
-		await Post.updateMany({category: catId}, {$set: {active: true}}); // delete all post relative to category
-		return res
-			.status(200)
-			.send({data: transformRespnose(cateogry, "category")});
-	} catch (err) {
-		throw next(err);
-	}
-};
+		const cat = await Category.findById(catId);
 
-/**
- * Get catgories
- */
-const deactivateCategory = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const catId = req.params.catId;
-		const cateogry = (await Category.findById(catId)) as CatDoc;
-		if (!cateogry) {
+		if (!cat) {
 			throw new NotFoundError("Category not found!");
 		}
-		if (!cateogry.active) {
-			throw new BadRequestError("Category already deactivated!");
+
+		if (status === "active") {
+			cat.active = true;
+			//await Post.updateMany({ category: catId }, { $set: { active: true } }); // delete all post relative to category
 		}
-		cateogry.active = false;
-		await cateogry.save();
-		await Post.updateMany({category: catId}, {$set: {active: false}}); // delete all post relative to category
-		return res
-			.status(200)
-			.send({data: transformRespnose(cateogry, "category")});
+
+		if (status === "inactive") {
+			cat.active = false;
+			//await Post.updateMany({ category: catId }, { $set: { active: false } }); // delete all post relative to category
+		}
+
+		await cat.save();
+		return res.status(200).send(cat);
 	} catch (err) {
 		throw next(err);
 	}
@@ -141,6 +118,5 @@ export {
 	getCategories,
 	addUpdateCategory,
 	deleteCategory,
-	activateCategory,
-	deactivateCategory,
+	enableInactiveCategory,
 };

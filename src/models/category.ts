@@ -6,7 +6,6 @@ interface catAttrs {
 	title: string;
 	slug: string;
 	active?: boolean;
-	insertAt?: Date;
 }
 
 // category document
@@ -14,7 +13,6 @@ export interface CatDoc extends mongoose.Document {
 	title: string;
 	slug: string;
 	active?: boolean;
-	insertAt?: Date;
 }
 
 // category model
@@ -25,12 +23,12 @@ interface CatModel extends mongoose.Model<CatDoc> {
 // category schema
 const categorySchema = new Schmea(
 	{
-		title: {type: String, required: true},
-		slug: {type: String, required: true},
-		active: {type: Boolean, default: true},
-		insertAt: {type: Date, default: Date.now},
+		title: { type: String, required: true },
+		slug: { type: String, required: true },
+		active: { type: Boolean, default: true },
 	},
 	{
+		timestamps: true,
 		toJSON: {
 			transform(doc, ret) {
 				delete ret.__v;
@@ -40,7 +38,7 @@ const categorySchema = new Schmea(
 );
 
 // static methods
-categorySchema.statics.build = (attr: catAttrs) => {
+categorySchema.statics.addNew = (attr: catAttrs) => {
 	return new Category(attr);
 };
 
@@ -48,4 +46,4 @@ categorySchema.statics.build = (attr: catAttrs) => {
 const Category = mongoose.model<CatDoc, CatModel>("Category", categorySchema);
 
 // export
-export {Category};
+export { Category };
