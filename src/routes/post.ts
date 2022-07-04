@@ -6,6 +6,7 @@ import {
 	deletePost,
 	getPost,
 	getPosts,
+	likeDislikePost,
 } from "../controllers/post";
 const route = express.Router();
 
@@ -65,5 +66,12 @@ route.delete("/:id", deletePost);
  * Url                  https://localhost:4200/api/post/:id
  */
 route.put("/status/:id", activeInactivePost);
+
+/**
+ * Method               put
+ * Access Level         Private
+ * Url                  https://localhost:4200/api/post/:id
+ */
+route.put("/social/:id", likeDislikePost);
 
 export { route as postRouter };

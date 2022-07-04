@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { NotFoundError } from "../errors";
-import { Post, PostDoc } from "../models/post";
+import { BadRequestError, NotFoundError } from "../errors";
+import { ILike, Post, PostDoc } from "../models/post";
 
 /**
  * Get all posts
@@ -138,6 +138,62 @@ const activeInactivePost = async (
 };
 
 /**
- *
+ * Like or Dislike
+ * @param req
+ * @param res
+ * @param next
  */
-export { getPost, getPosts, addUpdatePost, deletePost, activeInactivePost };
+const likeDislikePost = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const userId = req.currentUser.id;
+		const id = req.params.id;
+		const status = req.query.status;
+
+		const post = (await Post.findById(id)) as PostDoc;
+
+		// all likes
+		const Likes = post.likes?.filter(
+			(like) => like.user.toString() === userId
+		) as ILike[];
+
+		if (status === "like") {
+			if (Likes.length > 0) {
+				const like = <ILike>(
+					post.likes?.find((like) => like.user.toString() === userId)
+				);
+				if (like.active) {
+					throw new BadRequestError("You have already liked this post!");
+				}
+				updateLikes(post, userId, true);
+			}
+		}
+
+		if (status === "dislike") {
+		}
+	} catch (error) {
+		throw next(error);
+	}
+};
+
+function updateLikes(post: PostDoc, userId: string, value: boolean) {
+	const existLikes = post.likes as ILike[];
+	const index = existLikes.findIndex(
+		(like: ILike) => like.user.toString() === userId
+	);
+	const existLike = existLikes[index];
+	existLike.active = value;
+	existLikes[index] = existLike;
+	post.likes = existLikes;
+}
+export {
+	getPost,
+	getPosts,
+	addUpdatePost,
+	deletePost,
+	activeInactivePost,
+	likeDislikePost,
+};
