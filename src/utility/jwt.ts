@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {UserDoc} from "src/models/user";
+import { UserDoc } from "../models/user";
 
 /**
  * JWT
@@ -14,7 +14,7 @@ class Jwt {
 				firebase_uid: user.firebase_uid,
 			},
 			process.env.SECRET_KEY!,
-			{expiresIn: expire ?? "1h"}
+			{ expiresIn: expire ?? "1h" }
 		);
 	}
 
@@ -23,4 +23,4 @@ class Jwt {
 	}
 }
 
-export {Jwt};
+export { Jwt };

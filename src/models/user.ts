@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
 		last_name: {type: String, require: true},
 		username: {type: String, require: true},
 		email: {type: String, unique: true},
-		mobile: {type: String},
+		mobile: {type: String, default: ""},
 		photo_url: {type: String},
 		role: {type: String, default: "user", enum: IRole},
 		firebase_uid: {type: String, require: true},
