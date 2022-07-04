@@ -38,7 +38,7 @@ app.get("/api", (req, res, next) => {
 });
 
 // errors
-
+app.use(errorHandler);
 // listen
 const server = app.listen(PORT, async () => {
 	console.log("Server is running on --- ", PORT);
