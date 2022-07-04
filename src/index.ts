@@ -7,6 +7,7 @@ import { connectDb } from "./db";
 import { userRoutes } from "./routes/user";
 import { errorHandler } from "./middleware";
 import { categoryRouter } from "./routes/category";
+import { postRouter } from "./routes/post";
 import "./firebase";
 
 // app
@@ -32,13 +33,15 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // routes
-app.use("/api/user", userRoutes);
-app.use("/api/category", categoryRouter);
-app.get("/api", (req, res, next) => {
-	res.send({
-		message: "Api is running...",
+app
+	.use("/api/user", userRoutes)
+	.use("/api/category", categoryRouter)
+	.use("/api/post", postRouter)
+	.get("/api", (req, res, next) => {
+		res.send({
+			message: "Api is running...",
+		});
 	});
-});
 
 // errors
 app.use(errorHandler);
