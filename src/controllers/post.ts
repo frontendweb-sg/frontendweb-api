@@ -149,31 +149,40 @@ const likeDislikePost = async (
 	next: NextFunction
 ) => {
 	try {
-		const userId = req.currentUser.id;
+		const userId = req.user.id;
 		const id = req.params.id;
 		const status = req.query.status;
 
 		const post = (await Post.findById(id)) as PostDoc;
 
 		// all likes
-		const Likes = post.likes?.filter(
+		// const Likes = post.likes?.filter(
+		// 	(like) => like.user.toString() === userId
+		// ) as ILike[];
+
+		const like = post.likes?.find(
 			(like) => like.user.toString() === userId
-		) as ILike[];
+		) as ILike;
 
 		if (status === "like") {
-			if (Likes.length > 0) {
-				const like = <ILike>(
-					post.likes?.find((like) => like.user.toString() === userId)
-				);
-				if (like.active) {
-					throw new BadRequestError("You have already liked this post!");
-				}
-				updateLikes(post, userId, true);
+			console.log("hi like");
+			if (like && like.active) {
+				throw new BadRequestError("You have already liked this post!");
+			} else {
+				post.likes?.unshift({ user: userId, active: true });
 			}
 		}
 
 		if (status === "dislike") {
+			if (like && !like.active) {
+				throw new BadRequestError("You have already disliked this post!");
+			} else {
+				post.likes?.unshift({ user: userId, active: false });
+			}
 		}
+
+		await post.save();
+		return res.status(200).send(post);
 	} catch (error) {
 		throw next(error);
 	}

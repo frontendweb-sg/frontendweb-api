@@ -1,5 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
+import { admin, auth, currentUser } from "../middleware";
 import {
 	activeInactivePost,
 	addUpdatePost,
@@ -72,6 +73,6 @@ route.put("/status/:id", activeInactivePost);
  * Access Level         Private
  * Url                  https://localhost:4200/api/post/:id
  */
-route.put("/social/:id", likeDislikePost);
+route.put("/social/:id", currentUser, auth, likeDislikePost);
 
 export { route as postRouter };
