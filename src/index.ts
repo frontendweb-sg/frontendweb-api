@@ -4,11 +4,12 @@ import path from "path";
 import express from "express";
 import cors from "cors";
 import { connectDb } from "./db";
-import { userRoutes } from "./routes/user";
 import { errorHandler } from "./middleware";
+import { userRoutes } from "./routes/user";
 import { categoryRouter } from "./routes/category";
 import { postRouter } from "./routes/post";
 import "./firebase";
+import { courseCategoryRoute } from "./routes/course-category";
 
 // app
 const app = express();
@@ -28,15 +29,12 @@ app.use(
 	})
 );
 
-if (process.env.NODE_ENV === "development") {
-} else {
-}
-
 // routes
 app
 	.use("/api/user", userRoutes)
 	.use("/api/category", categoryRouter)
 	.use("/api/post", postRouter)
+	.use("/api/course-category", courseCategoryRoute)
 	.get("/api", (req, res, next) => {
 		res.send({
 			message: "Api is running...",
