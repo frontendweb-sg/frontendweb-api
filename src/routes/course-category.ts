@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { addUpdateCategory } from "../controllers/category";
 import {
+	addUpdateCourseCategory,
 	courseCategoryStatus,
 	deleteCourseCategory,
 	getCourseCategory,
 } from "../controllers/course-category";
+import { validateRequest } from "../middleware";
 
 // route
 const route = Router();
@@ -17,14 +18,16 @@ route.get("/", getCourseCategory);
 route.post(
 	"/",
 	[body("title", "Title is required!").notEmpty()],
-	addUpdateCategory
+	validateRequest,
+	addUpdateCourseCategory
 );
 
 /** update new course category */
 route.put(
 	"/:course_category_id",
 	[body("title", "Title is required!").notEmpty()],
-	addUpdateCategory
+	validateRequest,
+	addUpdateCourseCategory
 );
 
 /** delete course category */

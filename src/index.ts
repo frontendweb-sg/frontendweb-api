@@ -8,8 +8,11 @@ import { errorHandler } from "./middleware";
 import { userRoutes } from "./routes/user";
 import { categoryRouter } from "./routes/category";
 import { postRouter } from "./routes/post";
-import "./firebase";
 import { courseCategoryRoute } from "./routes/course-category";
+import "./firebase";
+
+// database connect
+connectDb();
 
 // app
 const app = express();
@@ -43,10 +46,38 @@ app
 
 // errors
 app.use(errorHandler);
+
 // listen
 const server = app.listen(PORT, async () => {
 	console.log("Server is running on --- ", PORT);
-	await connectDb();
 });
 
+interface ISignal {
+	SIGHUP: number;
+	SIGINT: number;
+	SIGTERM: number;
+}
+const signals = {
+	SIGHUP: 1,
+	SIGINT: 2,
+	SIGTERM: 15,
+};
+
+// Do any necessary shutdown logic for our application here
+const shutdown = (signal: any, value?: number) => {
+	console.log("shutdown!");
+	server.close(() => {
+		console.log(`server stopped by ${signal} with value ${value}`);
+		process.exit(0);
+	});
+};
+
+// Create a listener for each of the signals that we want to handle
+Object.keys(signals).forEach((signal: string) => {
+	console.log("s", signal);
+	process.on(signal, () => {
+		console.log(`process received a ${signal} signal`);
+		shutdown(signal);
+	});
+});
 export { server };
