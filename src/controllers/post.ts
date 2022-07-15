@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError, NotFoundError } from "../errors";
+import { NotFoundError } from "../errors";
 import { ILike, Post, PostDoc } from "../models/post";
 
 /**
@@ -149,40 +149,34 @@ const likeDislikePost = async (
 	next: NextFunction
 ) => {
 	try {
-		const userId = req.user.id;
-		const id = req.params.id;
-		const status = req.query.status;
-
-		const post = (await Post.findById(id)) as PostDoc;
-
-		// all likes
-		// const Likes = post.likes?.filter(
+		// const userId = req.user.id;
+		// const id = req.params.id;
+		// const status = req.query.status;
+		// const post = (await Post.findById(id)) as PostDoc;
+		// // all likes
+		// // const Likes = post.likes?.filter(
+		// // 	(like) => like.user.toString() === userId
+		// // ) as ILike[];
+		// const like = post.likes?.find(
 		// 	(like) => like.user.toString() === userId
-		// ) as ILike[];
-
-		const like = post.likes?.find(
-			(like) => like.user.toString() === userId
-		) as ILike;
-
-		if (status === "like") {
-			console.log("hi like");
-			if (like && like.active) {
-				throw new BadRequestError("You have already liked this post!");
-			} else {
-				post.likes?.unshift({ user: userId, active: true });
-			}
-		}
-
-		if (status === "dislike") {
-			if (like && !like.active) {
-				throw new BadRequestError("You have already disliked this post!");
-			} else {
-				post.likes?.unshift({ user: userId, active: false });
-			}
-		}
-
-		await post.save();
-		return res.status(200).send(post);
+		// ) as ILike;
+		// if (status === "like") {
+		// 	console.log("hi like");
+		// 	if (like && like.active) {
+		// 		throw new BadRequestError("You have already liked this post!");
+		// 	} else {
+		// 		post.likes?.unshift({ user: userId, active: true });
+		// 	}
+		// }
+		// if (status === "dislike") {
+		// 	if (like && !like.active) {
+		// 		throw new BadRequestError("You have already disliked this post!");
+		// 	} else {
+		// 		post.likes?.unshift({ user: userId, active: false });
+		// 	}
+		// }
+		// await post.save();
+		// return res.status(200).send(post);
 	} catch (error) {
 		throw next(error);
 	}

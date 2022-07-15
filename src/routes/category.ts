@@ -6,7 +6,7 @@ import {
 	enableInactiveCategory,
 } from "../controllers/category";
 import { body } from "express-validator";
-import { admin, auth, currentUser, validateRequest } from "../middleware";
+import { auth, validateRequest } from "../middleware";
 
 // route
 const route = express.Router();
