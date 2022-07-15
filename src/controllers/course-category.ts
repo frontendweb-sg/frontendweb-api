@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "../errors";
 import { CourseCategory, ICourseCateogryDoc } from "../models/course-category";
-import { slugname } from "../utility";
+import { orderIncrease, slugname } from "../utility";
 
 /**
  * Fetch all course categories
@@ -41,13 +41,18 @@ const addUpdateCourseCategory = async (
 	try {
 		if (slug == undefined) slug = slugname(title);
 
+		const allCats = await CourseCategory.find();
+		const orders = orderIncrease<ICourseCateogryDoc>(allCats);
+
 		const category = (await CourseCategory.findById(id)) as ICourseCateogryDoc;
 
 		if (category) {
-			category.title = title;
-			category.slug = slug;
-			category.order = order;
-			category.offer = offer;
+			category.$set({
+				title,
+				slug,
+				order,
+				offer,
+			});
 
 			await category.save();
 			return res.send(200).send(category);
@@ -62,7 +67,7 @@ const addUpdateCourseCategory = async (
 		const cat = CourseCategory.addNew({
 			title,
 			slug,
-			order,
+			order: orders ? orders[orders.length - 1].order + 1 : 0,
 			offer,
 		}) as ICourseCateogryDoc;
 
