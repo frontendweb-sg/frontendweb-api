@@ -4,10 +4,15 @@ import path from "path";
 import express from "express";
 import cors from "cors";
 import { connectDb } from "./db";
-import { userRoutes } from "./routes/user";
 import { errorHandler } from "./middleware";
+import { userRoutes } from "./routes/user";
 import { categoryRouter } from "./routes/category";
+import { postRouter } from "./routes/post";
+import { courseCategoryRoute } from "./routes/course-category";
 import "./firebase";
+
+// database connect
+connectDb();
 
 // app
 const app = express();
@@ -27,25 +32,51 @@ app.use(
 	})
 );
 
-if (process.env.NODE_ENV === "development") {
-} else {
-}
-
 // routes
-app.use("/api/user", userRoutes);
-app.use("/api/category", categoryRouter);
-app.get("/api", (req, res, next) => {
-	res.send({
-		message: "Api is running...",
+app
+	.use("/api/user", userRoutes)
+	.use("/api/category", categoryRouter)
+	.use("/api/post", postRouter)
+	.use("/api/course-category", courseCategoryRoute)
+	.get("/api", (req, res, next) => {
+		res.send({
+			message: "Api is running...",
+		});
 	});
-});
 
 // errors
 app.use(errorHandler);
+
 // listen
 const server = app.listen(PORT, async () => {
 	console.log("Server is running on --- ", PORT);
-	await connectDb();
 });
 
+interface ISignal {
+	SIGHUP: number;
+	SIGINT: number;
+	SIGTERM: number;
+}
+const signals = {
+	SIGHUP: 1,
+	SIGINT: 2,
+	SIGTERM: 15,
+};
+
+// Do any necessary shutdown logic for our application here
+const shutdown = (signal: any, value?: number) => {
+	console.log("shutdown!");
+	server.close(() => {
+		console.log(`server stopped by ${signal} with value ${value}`);
+		process.exit(0);
+	});
+};
+
+// Create a listener for each of the signals that we want to handle
+Object.keys(signals).forEach((signal: string) => {
+	process.on(signal, () => {
+		console.log(`process received a ${signal} signal`);
+		shutdown(signal);
+	});
+});
 export { server };

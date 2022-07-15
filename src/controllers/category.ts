@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, NotFoundError } from "../errors";
 import { CatDoc, Category } from "../models/category";
-import { Post } from "../models/blog";
+import { Post } from "../models/post";
 import { slugname } from "../utility";
 
 /**

@@ -18,7 +18,7 @@ class Jwt {
 		);
 	}
 
-	static tokenVerify(token: string) {
+	static verify(token: string) {
 		return jwt.verify(token, process.env.SECRET_KEY!);
 	}
 }

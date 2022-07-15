@@ -1,20 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import { Jwt } from "../utility";
 import { AuthenticationError } from "../errors";
-
-// jwt response
-interface UserPayload {
-	id: string;
-	email: string;
-}
-
-declare global {
-	namespace Express {
-		export interface Request {
-			currentUser: UserPayload;
-		}
-	}
-}
 
 const currentUser = (req: Request, res: Response, next: NextFunction) => {
 	const header = req.get("Authorization");
@@ -29,11 +15,13 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
 
 	let verify = null;
 	try {
-		verify = jwt.verify(token, process.env.SECRET_KEY!) as UserPayload;
+		verify = Jwt.verify(token) as UserPayload;
 	} catch (err) {
 		throw new AuthenticationError();
 	}
-	req.currentUser = verify;
+
+	req.user = verify;
+
 	if (!verify) {
 		throw new AuthenticationError();
 	}
