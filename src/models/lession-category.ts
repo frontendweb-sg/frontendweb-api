@@ -1,6 +1,7 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { COURSE_TABLE } from "./course";
 
+const LESSION_CATEGORY_NAME = "lession-category";
 // attributes
 interface ILessionCategory {
 	course: string;
@@ -31,3 +32,16 @@ const schema = new Schema(
 	},
 	{ timestamps: true }
 );
+
+schema.statics.addNew = (attr: ILessionCategory) => {
+	return new LessionCategory(attr);
+};
+
+// category
+const LessionCategory = mongoose.model<ILessonCategoryDoc, ILessionCatModel>(
+	LESSION_CATEGORY_NAME,
+	schema
+);
+
+// export
+export { LESSION_CATEGORY_NAME, LessionCategory, ILessonCategoryDoc };
