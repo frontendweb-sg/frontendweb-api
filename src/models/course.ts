@@ -15,6 +15,8 @@ import { ESkill, EStatus } from "../utility";
  *  skill-type:'beginers',
  * }
  */
+
+const COURSE_TABLE = "Course";
 interface ICourse {
 	category: string;
 	title: string;
@@ -30,7 +32,7 @@ interface ICourse {
 	active?: boolean;
 }
 
-interface ICourseDoc extends Document<ICourse> {}
+interface ICourseDoc extends ICourse, Document<ICourse> {}
 
 interface ICourseModel extends Model<ICourseDoc> {
 	addNew(attr: ICourse): ICourseDoc;
@@ -55,3 +57,14 @@ const courseSchema = new Schema(
 		timestamps: true,
 	}
 );
+
+const Course = mongoose.model<ICourseDoc, ICourseModel>(
+	COURSE_TABLE,
+	courseSchema
+);
+
+courseSchema.statics.addNew = (attr: ICourse) => {
+	return new Course(attr);
+};
+
+export { COURSE_TABLE, Course, ICourseDoc };

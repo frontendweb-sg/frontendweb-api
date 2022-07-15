@@ -10,6 +10,7 @@ import { categoryRouter } from "./routes/category";
 import { postRouter } from "./routes/post";
 import { courseCategoryRoute } from "./routes/course-category";
 import "./firebase";
+import { courseRoute } from "./routes/course";
 
 // database connect
 connectDb();
@@ -38,6 +39,7 @@ app
 	.use("/api/category", categoryRouter)
 	.use("/api/post", postRouter)
 	.use("/api/course-category", courseCategoryRoute)
+	.use("/api/course", courseRoute)
 	.get("/api", (req, res, next) => {
 		res.send({
 			message: "Api is running...",
