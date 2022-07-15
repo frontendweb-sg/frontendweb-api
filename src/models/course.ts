@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { ESkill, EStatus } from "../utility";
+import { COURSE_CATEGORY_NAME } from "./course-category";
 
 /**
  * html{
@@ -40,7 +41,11 @@ interface ICourseModel extends Model<ICourseDoc> {
 
 const courseSchema = new Schema(
 	{
-		category: { type: String, require: true },
+		category: {
+			type: Schema.Types.ObjectId,
+			ref: COURSE_CATEGORY_NAME,
+			require: true,
+		},
 		title: { type: String, require: true },
 		slug: { type: String, require: true },
 		image: { type: String },
