@@ -16,7 +16,7 @@ const getCourseCategory = async (
 	next: NextFunction
 ) => {
 	try {
-		const categories = (await CourseCategory.find({})) as ICourseCateogryDoc[];
+		const categories = (await CourseCategory.find()) as ICourseCateogryDoc[];
 		return res.status(200).send(categories);
 	} catch (error) {
 		next(error);

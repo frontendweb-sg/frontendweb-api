@@ -48,23 +48,23 @@ const courseSchema = new Schema(
 		excerpt: { type: String },
 		skill_type: { type: String, enum: ESkill, default: ESkill.beginers },
 		status: { type: String, enum: EStatus, default: EStatus.PENDING },
-		price: { type: Number, default: 0.0 },
+		price: { type: Number, default: 0 },
 		offer: { type: Number, default: 0 },
 		isFree: { type: Boolean, default: true },
-		active: { type: Boolean, require: true },
+		active: { type: Boolean, default: true },
 	},
 	{
 		timestamps: true,
 	}
 );
 
+courseSchema.statics.addNew = (attr: ICourse) => {
+	return new Course(attr);
+};
+
 const Course = mongoose.model<ICourseDoc, ICourseModel>(
 	COURSE_TABLE,
 	courseSchema
 );
-
-courseSchema.statics.addNew = (attr: ICourse) => {
-	return new Course(attr);
-};
 
 export { COURSE_TABLE, Course, ICourseDoc };

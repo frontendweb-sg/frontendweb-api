@@ -12,7 +12,7 @@ import { deleteFile, EStatus, slugname } from "../utility";
  */
 const getCourses = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const courses = (await Course.find({ active: 1 }).sort({
+		const courses = (await Course.find().sort({
 			createdAt: 1,
 		})) as ICourseDoc[];
 		return res.status(200).send(courses);
@@ -67,10 +67,10 @@ const addUpdateCourse = async (
 			course.slug = slug;
 			course.category = category;
 			course.description = description;
-			course.excerpt = excerpt;
-			course.skill_type = skill_type;
-			course.price = +price;
-			course.offer = +offer ?? +course.offer;
+			course.excerpt = excerpt ?? course.excerpt;
+			course.skill_type = skill_type ?? course.skill_type;
+			course.price = price ? +price : course.price;
+			course.offer = offer ? +offer : course.offer;
 
 			if (image) {
 				deleteFile(course.image!);
@@ -89,8 +89,9 @@ const addUpdateCourse = async (
 
 		const newCourse = Course.addNew({
 			...req.body,
-			price: +price,
-			offer: +offer,
+			slug,
+			price: price ? +price : 0,
+			offer: offer ? +offer : 0,
 		}) as ICourseDoc;
 
 		const result = await newCourse.save();
