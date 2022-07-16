@@ -19,12 +19,6 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
 			throw new BadRequestError("User already registered!");
 		}
 
-		// const isFbUser = await getAuth().getUserByEmail(email);
-		// console.log("is", isFbUser);
-		// if (isFbUser) {
-		// 	throw new BadRequestError("User already registered!");
-		// }
-
 		const displayName = first_name + " " + last_name;
 		const fbUser = await getAuth().createUser({
 			email,

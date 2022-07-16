@@ -36,7 +36,7 @@ app.use(
 // routes
 app
 	.use("/api/user", userRoutes)
-	.use("/api/category", categoryRouter)
+	.use("/api/post-category", categoryRouter)
 	.use("/api/post", postRouter)
 	.use("/api/course-category", courseCategoryRoute)
 	.use("/api/course", courseRoute)
