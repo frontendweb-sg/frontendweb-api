@@ -1,7 +1,60 @@
 import admin from "firebase-admin";
-import {Request, Response, NextFunction} from "express";
-import {User, UserDoc} from "../models/user";
-import {IRole, Jwt} from "../utility";
+import { Request, Response, NextFunction } from "express";
+import { User, IUserDoc } from "../models/user";
+import { ERole, Jwt, Password } from "../utility";
+import { BadRequestError } from "../errors";
+import { getAuth } from "firebase-admin/auth";
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+const signUp = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { first_name, last_name, email, password, mobile, role } = req.body;
+
+		const isUser = await User.findOne({ email });
+		if (isUser) {
+			throw new BadRequestError("User already registered!");
+		}
+
+		// const isFbUser = await getAuth().getUserByEmail(email);
+		// console.log("is", isFbUser);
+		// if (isFbUser) {
+		// 	throw new BadRequestError("User already registered!");
+		// }
+
+		const displayName = first_name + " " + last_name;
+		const fbUser = await getAuth().createUser({
+			email,
+			emailVerified: true,
+			password,
+			displayName,
+			photoURL: "http://www.example.com/12345678/photo.png",
+			disabled: false,
+		});
+
+		const user = User.addUser({
+			first_name,
+			last_name,
+			username: displayName,
+			email,
+			password: Password.toHash(password),
+			mobile,
+			role: role,
+			firebase_uid: fbUser.uid,
+			photo_url: fbUser.photoURL,
+			active: true,
+		});
+
+		const result = await user.save();
+		return res.status(201).send(result);
+	} catch (error) {
+		next(error);
+	}
+};
+
 /**
  * User signin
  * @param req
@@ -11,7 +64,7 @@ import {IRole, Jwt} from "../utility";
 const signIn = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		// body
-		const {firebaseToken} = req.body;
+		const { firebaseToken } = req.body;
 
 		// check firebase
 		if (!firebaseToken) {
@@ -32,7 +85,7 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
 		const expire = new Date(Date.now()).getTime() + lExpiresIn;
 
 		// if user
-		const hasUser = (await User.findOne({email: firebase.email})) as UserDoc;
+		const hasUser = (await User.findOne({ email: firebase.email })) as IUserDoc;
 		if (hasUser) {
 			const token = Jwt.tokenGenerate(hasUser!);
 			return res.send({
@@ -51,10 +104,9 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
 			photo_url: firebase.picture,
 			firebase_uid: firebase.user_id,
 			active: true,
-			role: IRole.user,
-			country: "India",
-			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-		}) as UserDoc;
+			role: ERole.user,
+		}) as IUserDoc;
+
 		const result = await user.save();
 		const token = Jwt.tokenGenerate(result);
 		return res.send({
@@ -67,26 +119,15 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-/**
- * User signup
- * @param req
- * @param res
- * @param next
- */
-const signUp = async (req: Request, res: Response, next: NextFunction) => {
+const signInWithEmail = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
-		console.log(req.body);
-		res.json({
-			message: "success",
-		});
-	} catch (error) {
-		next(error);
-	}
-};
+		const { email, password } = req.body;
 
-const signInEmail = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const {firebaseToken} = req.body;
+		const isUser = (await User.findOne({ email })) as IUserDoc;
 	} catch (error) {
 		next(error);
 	}
@@ -94,4 +135,4 @@ const signInEmail = async (req: Request, res: Response, next: NextFunction) => {
 /**
  * export methods
  */
-export {signIn, signUp, signInEmail};
+export { signIn, signUp, signInWithEmail };

@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
-import { UserDoc } from "../models/user";
+import { IUserDoc } from "../models/user";
 
 /**
  * JWT
  */
 class Jwt {
-	static tokenGenerate(user: UserDoc, expire?: string | number) {
+	static tokenGenerate(user: IUserDoc, expire?: string | number) {
 		return jwt.sign(
 			{
 				id: user._id,

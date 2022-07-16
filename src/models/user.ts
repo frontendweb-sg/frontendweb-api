@@ -1,55 +1,38 @@
-import mongoose from "mongoose";
-import {IRole} from "../utility";
+import mongoose, { Document, Model, Schema } from "mongoose";
+import { ERole } from "../utility";
 
-/**
- * User schema
- */
-
-export interface userAttr {
+const USER_TABLE_NAME = "user";
+interface IUser {
 	first_name: string;
 	last_name: string;
 	username: string;
 	email: string;
+	password?: string;
 	mobile?: string;
 	photo_url?: string;
 	firebase_uid?: string;
-	country?: string;
-	timezone?: string;
-	role?: IRole;
+	role?: ERole;
 	active?: boolean;
 }
 
-export interface UserDoc extends mongoose.Document {
-	first_name: string;
-	last_name: string;
-	username: string;
-	email: string;
-	mobile?: string;
-	photo_url?: string;
-	firebase_uid?: string;
-	country?: string;
-	timezone?: string;
-	role?: IRole;
-	active?: boolean;
+interface IUserDoc extends IUser, Document<IUser> {}
+
+interface IUserModel extends IUser, Model<IUserDoc> {
+	addUser(user: IUser): IUserDoc;
 }
 
-interface UserModel extends mongoose.Model<UserDoc> {
-	addUser(attr: userAttr): UserDoc;
-}
-
-const userSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
 	{
-		first_name: {type: String, require: true},
-		last_name: {type: String, require: true},
-		username: {type: String, require: true},
-		email: {type: String, unique: true},
-		mobile: {type: String, default: ""},
-		photo_url: {type: String},
-		role: {type: String, default: "user", enum: IRole},
-		firebase_uid: {type: String, require: true},
-		country: {type: String},
-		timezone: {type: String},
-		active: {type: Boolean, default: true},
+		first_name: { type: String, require: true },
+		last_name: { type: String, require: true },
+		username: { type: String, require: true },
+		email: { type: String, unique: true },
+		password: { type: String },
+		mobile: { type: String, default: "" },
+		photo_url: { type: String },
+		role: { type: String, default: "student", enum: ERole },
+		firebase_uid: { type: String, require: true },
+		active: { type: Boolean, default: true },
 	},
 	{
 		timestamps: true,
@@ -62,11 +45,10 @@ const userSchema = new mongoose.Schema(
 	}
 );
 
-userSchema.statics.addUser = (user: userAttr) => {
+schema.statics.addUser = (user: IUser) => {
 	return new User(user);
 };
 
-const User = mongoose.model<UserDoc, UserModel>("User", userSchema);
+const User = mongoose.model<IUserDoc, IUserModel>(USER_TABLE_NAME, schema);
 
-// export
-export {User};
+export { USER_TABLE_NAME, IUserDoc, User };
