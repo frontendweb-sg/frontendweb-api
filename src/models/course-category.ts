@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
+const COURSE_CATEGORY_NAME = "course-category";
 interface ICourseCategory {
 	title: string;
 	slug: string;
@@ -47,8 +48,8 @@ schema.statics.addNew = (attr: Attr) => {
 };
 
 const CourseCategory = mongoose.model<ICourseCateogryDoc, ICourseCategoryModel>(
-	"course-cateogry",
+	COURSE_CATEGORY_NAME,
 	schema
 );
 
-export { ICourseCateogryDoc, CourseCategory };
+export { COURSE_CATEGORY_NAME, ICourseCateogryDoc, CourseCategory };

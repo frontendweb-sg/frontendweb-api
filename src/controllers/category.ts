@@ -16,7 +16,7 @@ const getCategories = async (
 		const cats = (await Category.find().sort({ title: 1 })) as CatDoc[];
 		res.status(200).send(cats);
 	} catch (err) {
-		throw next(err);
+		next(err);
 	}
 };
 
@@ -42,18 +42,18 @@ const addUpdateCategory = async (
 			existCat.slug = slug;
 			await existCat.save();
 			return res.status(200).send(existCat);
-		} else {
-			if (!slug) slug = slugname(title);
-			const cateogry = Category.addNew({
-				title,
-				slug,
-			});
-
-			await cateogry.save();
-			return res.status(201).send(cateogry);
 		}
+
+		if (!slug) slug = slugname(title);
+		const cateogry = Category.addNew({
+			title,
+			slug,
+		});
+
+		await cateogry.save();
+		return res.status(201).send(cateogry);
 	} catch (err) {
-		throw next(err);
+		next(err);
 	}
 };
 
@@ -75,7 +75,7 @@ const deleteCategory = async (
 		await Post.deleteMany({ category: result._id }); // delete all post relative to category
 		return res.status(200).send({ _id: catId });
 	} catch (err) {
-		throw next(err);
+		next(err);
 	}
 };
 
@@ -109,7 +109,7 @@ const enableInactiveCategory = async (
 		await cat.save();
 		return res.status(200).send(cat);
 	} catch (err) {
-		throw next(err);
+		next(err);
 	}
 };
 
